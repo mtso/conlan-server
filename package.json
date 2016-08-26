@@ -1,0 +1,8 @@
+{
+  "name": "conlan-server",
+  "version": "0.1.0",
+  "description": "game server for conlan mmo",
+  "dependencies": {
+    "express": "^4.10.2"
+  }
+}
