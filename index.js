@@ -10,6 +10,20 @@ http.listen(3000, function() {
   console.log('Listening on *:3000');
 });
 
+var i = 0;
+
 io.on('connection', function(socket) {
   console.log('A user connected.');
+
+  socket.join('testroom' + i.toString());
+
 });
+
+var j = 0;
+
+setInterval(function() {
+  console.log("Server speaking");
+  var currentDateTime = new Date().toLocaleString();
+  var message = "Hello guys. This is server speaking."
+  io.emit('newChatMessage', "server", message, currentDateTime);
+}, 1000);
