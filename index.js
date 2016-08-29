@@ -1,7 +1,9 @@
+var fs   = require('fs');
 var app  = require('express')();
 var http = require('http').Server(app);
 var io   = require('socket.io')(http);
-var fs   = require('fs');
+
+var Simulation = require('./simulation');
 
 var users = [];
 
@@ -13,13 +15,25 @@ app.get('/', function(req, res) {
 
 http.listen(3000, function() {
     console.log('Listening on *:3000');
+    console.log(newRoom());
 
     fs.readFile('users.json', 'utf8', function(error, data) {
-    	if (error) {
-    		return console.log(error);
-    	}
+    	if (error) { return console.log(error); }
+
     	users = JSON.parse(data);
+    	for (i in users) {
+    		users[i].isConnected = false;
+    	}
+
+
+		var simulation = new Simulation(3, io, users[0]);
+		simulation.test();
+		console.log(newRoom());
+
     });
+
+
+
 });
 
 
@@ -31,6 +45,8 @@ function saveUsers() {
 
 io.on('connection', function(socket) {
     console.log('A client connected.');
+    io.emit('userUpdate', users);
+
 
     /// Signin
     socket.on('signin', function(username) {
@@ -55,6 +71,7 @@ io.on('connection', function(socket) {
 	        userInfo.name = username;
 	        userInfo.id = socket.id;
 	        userInfo.isConnected = true;
+	        userInfo.balance = 0;
 
 	        users.push(userInfo);
 	    }
@@ -90,5 +107,23 @@ io.on('connection', function(socket) {
 
     });
 
+
+    socket.on('embarkQuest', function() {
+
+    	// var room = newRoom();
+
+    })
+
 });
+
+
+var roomCounter = 0;
+function newRoom() {
+	return "sim:" + roomCounter++;
+};
+
+
+// var Simulation = require('./simulation');
+// var simulation = new Simulation(3, io, users[0]);
+// simulation.test();
 
