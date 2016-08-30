@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+	<body>
+		<h1> Conlan Test Server </h1>
+
+		<button onclick="signinButtonClick()">Sign In</button>
+
+		<button onclick="actionButtonClick()">Action</button>
+
+	    <button onclick="embarkQuestClick()">Embark Quest</button>
+
+		<script src="/socket.io/socket.io.js"></script>
+		<script>
+
+			var socket = io();
+
+			socket.on('logToConsole', function(string) {
+				console.log(string);
+			});
+
+			function signinButtonClick() {
+				socket.emit('signin', 'web-client');
+			}
+
+			function actionButtonClick() {
+				console.log('Action Button pressed');
+			}
+
+			function embarkQuestClick() {
+				console.log('Embark Quest button pressed');
+				socket.emit('embarkQuest');
+			}
+
+		</script>
+	</body>
+</html>

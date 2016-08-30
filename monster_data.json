@@ -1,0 +1,11 @@
+[
+  {
+    "name": "Ice Dragon",
+    "id": "monster:00001",
+    "health": 200,
+    "energy": 70,
+    "skills": [
+      { "name": "Claw Attack" , "damage": 10 , "cooldown": 6 }
+    ]
+  }
+]
