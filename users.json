@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Matt",
+    "id": "/#b6XSwzptx137nVXJAAAA",
+    "creation": "Wed Aug 31 2016 13:41:06 GMT-0700 (PDT)",
+    "isConnected": true,
+    "balance": 0,
+    "isInSimulation": false,
+    "isInParty": false,
+    "partyMembers": []
+  },
+  {
+    "name": "Foo",
+    "id": "/#HkhZG9mBw2Aey-9rAAAB",
+    "creation": "Wed Aug 31 2016 13:41:41 GMT-0700 (PDT)",
+    "isConnected": true,
+    "balance": 0,
+    "isInSimulation": false,
+    "isInParty": false,
+    "partyMembers": []
+  }
+]
