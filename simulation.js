@@ -9,8 +9,8 @@ module.exports = Simulation;
 
 
 function Simulation(io, user) {
-	this.room = generateRoomID();
-	this.io = io;
+	this.namespace = generateNamespace();
+	// this.io = io;
 
 	this.users = [];
   this.users.push(user);
@@ -18,38 +18,69 @@ function Simulation(io, user) {
     this.users.push(user.partyMembers[i]);
   }
 
-	console.log('Simulation instance created with room name ' + this.room + ' and user ' + this.users[0].name);
-	this.setup();
+	console.log('Simulation instance created with namespace ' + this.namespace + ' and user ' + this.users[0].name);
 
 	/// Update variables
 	this.updateTimer = setInterval(this.update, UPDATE_INTERVAL);
+
+
+  
+  this.setup(io);
 
 };
 
 
 /// Sets up the room, adding user, current quest monster
-Simulation.prototype.setup = function() {
+/// Declare and define simulation namespace process
+Simulation.prototype.setup = function(io) {
 
-  this.io.on('connection', function(socket) {
-    console.log('Simulation defining new connection event');
-    socket.on('joinSimulationRoom', function(roomID) {
-      socket.join(roomID);
-      console.log('User attempted to join sim through sim*.js')
-      this.io.to(this.room).emit('logToConsole', 'Received join request from user ' + socket.id);
-    })
+  var namespace = this.namespace;
+
+  this.sim = io.of(this.namespace);
+
+  var simulation = this;
+
+  this.sim.on('connection', function(socket) {
+    console.log('User connected to simulation namespace ' + namespace);
+    // console.log('/sim' + this.room);
+
+    socket.on('joinSimulation', function(username) {
+      console.log('User ' + username + ' joins sim');
+
+      console.log(this.users);
+      
+      for (var i in this.users) {
+
+        var user = this.users[i];
+        console.log(user);
+        if (user.name == username) {
+          user.isInSimulation = true;
+        }
+      }
+
+      if (allPlayersReady(this.users)) {
+        console.log('ready');
+        simulation.beginCountdown();
+      } else {
+        console.log('not ready');
+      }
+
+    });
   });
 
+
+  // Once set up, broadcast namespace to the users in the party.
   for (var i in this.users) {
     const id = this.users[i].id
-    this.io.to(id).emit('newSimulationCreated', this.room);
+    io.to(id).emit('newSimulationCreated', this.namespace);
   }
 
 }
 
 
 /// Begin countdown of simulation, syncing all clients to a single time
-Simulation.prototype.begin = function() {
-
+Simulation.prototype.beginCountdown = function() {
+  console.log('countdown beginning');
 }
 
 
@@ -65,9 +96,19 @@ Simulation.prototype.update = function() {
 }
 
 
-var roomIncrement = 0;
-function generateRoomID() {
-  const hash = crypto.createHash('sha224').update(((new Date).getTime() + roomIncrement).toString()).digest('base64');
-  return "sim:" + hash.substring(0, 8);
+var increment = 0;
+function generateNamespace() {
+  const hash = crypto.createHash('sha224').update(((new Date).getTime() + increment++).toString()).digest('base64');
+  return "/sim:" + hash.substring(0, 8);
 };
 
+
+function allPlayersReady(users) {
+  var ready = true;
+  for (var i in users) {
+    if (!users[i].isInSimulation) {
+      ready = false;
+    }
+  }
+  return ready ? true : false;
+}
