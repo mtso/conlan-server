@@ -1,5 +1,6 @@
 {
   "name": "conlan-server",
+  "main": "./server.js",
   "version": "0.1.0",
   "private": true,
   "description": "game server for conlan mmo",

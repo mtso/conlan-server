@@ -6,11 +6,11 @@
  */
 
 /// Require
-var app  = require('express')();
-var http = require('http').Server(app);
-var io   = require('socket.io')(http);
-var fs   = require('fs');
-var Simulation = require('./simulation.js');
+const app  = require('express')();
+const http = require('http').Server(app);
+const io   = require('socket.io')(http);
+const fs   = require('fs');
+const Simulation = require('./simulation.js');
 
 
 /// Local variables
@@ -44,7 +44,7 @@ function saveUsers() {
 
 io.on('connection', function(socket) {
 
-	/// New connection routine
+    /// New connection routine
     console.log('A client connected.');
     io.emit('userUpdate', users);
 
@@ -92,6 +92,8 @@ io.on('connection', function(socket) {
 	    if (!foundUser) {
 	        userInfo.name = username;
 	        userInfo.id = socket.id;
+          userInfo.creation = (new Date).toString();
+
 	        userInfo.isConnected = true;
 	        userInfo.balance = 0;
 	        userInfo.isInSimulation = false;
@@ -109,22 +111,28 @@ io.on('connection', function(socket) {
 
     /// Send Quest Data
     socket.on('getQuests', function() {
-
-
+    	// var data = questsData;
+    	// io.to(socket.id).emit('sendQuests', data);
     });
 
 
     /// Start a quest simulation with specified user
     socket.on('embarkQuest', function() {
 
-    	console.log('Attempting to embark on quest');
-    	var user = userForID(socket.id);
-    	console.log(user);
-    	if (user) {
-    		var simulation = new Simulation(newRoomID(), io, user, socket);
-    	}
+      console.log('Attempting to embark on quest');
 
-    })
+      var user = userForID(socket.id);
+      if (user && !user.isInSimulation) {
+        var simulation = new Simulation(io, user);
+      }
+
+    });
+
+
+    /// Join the party of a user.
+    socket.on('joinParty', function(leaderName) {
+
+    });
 
 });
 
@@ -138,11 +146,11 @@ io.on('connection', function(socket) {
 // });
 
 
-var roomCounter = 0;
+// var roomCounter = 0;
 
-function newRoomID() {
-	return "sim:" + roomCounter++;
-};
+// function newRoomID() {
+// 	return "sim:" + roomCounter++;
+// };
 
 
 function userForID(id) {

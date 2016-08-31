@@ -1,25 +1,34 @@
 <!DOCTYPE html>
 <html>
+
+  <head>
+    <style>
+      body {
+        font: 400 16px/1.5 -apple-system, BlinkMacSystemFont, sans-serif;
+      }
+    </style>
+  </head>
+
 	<body>
 		<h1> Conlan Test Server </h1>
 
 		<button onclick="signinButtonClick()">Sign In</button>
-
 		<button onclick="actionButtonClick()">Action</button>
+	  <button onclick="embarkQuestClick()">Embark Quest</button>
 
-	    <button onclick="embarkQuestClick()">Embark Quest</button>
+    <h4>Users</h4>
+    <ul id="userlist"></ul>
+
 
 		<script src="/socket.io/socket.io.js"></script>
 		<script>
 
-			var socket = io();
+			const socket = io();
+      const username = 'web-client-' + (new Date).getTime().toString().substring(3, 11);
 
-			socket.on('logToConsole', function(string) {
-				console.log(string);
-			});
-
+      /// ==Button clicks==
 			function signinButtonClick() {
-				socket.emit('signin', 'web-client');
+				socket.emit('signin', username);
 			}
 
 			function actionButtonClick() {
@@ -27,9 +36,35 @@
 			}
 
 			function embarkQuestClick() {
-				console.log('Embark Quest button pressed');
 				socket.emit('embarkQuest');
 			}
+
+      /// ==IO events==
+      socket.on('logToConsole', function(string) {
+        console.log(string);
+      });
+
+      socket.on('newSimulationCreated', function(roomID) {
+        console.log('Received new simulation created for ' + roomID);
+        socket.emit('joinSimulationRoom', roomID);
+      })
+
+      socket.on('userUpdate', function(users) {
+
+        var list = document.getElementById('userlist');
+        while(list.lastChild) {
+          list.removeChild(list.lastChild);
+        }
+
+        for (var i in users) {
+          if (!users[i].isConnected) { continue; }
+          var name = users[i].name;
+          var listItem = document.createElement('li');
+          listItem.setAttribute('class', 'list-item');
+          listItem.innerHTML = name;
+          document.getElementById('userlist').appendChild(listItem);
+        }
+      });
 
 		</script>
 	</body>
