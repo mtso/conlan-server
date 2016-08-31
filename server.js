@@ -25,9 +25,9 @@ app.get('/', function(req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 
-
-http.listen(36000, function() {
-    console.log('Listening on *:36000');
+// process.env.PORT for dynamic Heroku port
+http.listen(process.env.PORT || 3000, function() {
+    console.log('Listening on *:3000');
 
     fs.readFile('users.json', 'utf8', function(error, data) {
     	if (error) { return console.log(error); }
