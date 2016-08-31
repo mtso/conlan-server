@@ -5,6 +5,10 @@
  *  Server process
  */
 
+const Entity = require('./gameplay/entity.js');
+var entity = new Entity();
+entity.addComponent('3');
+
 /// Require
 const app  = require('express')();
 const http = require('http').Server(app);
@@ -22,8 +26,8 @@ app.get('/', function(req, res) {
 });
 
 
-http.listen(3000, function() {
-    console.log('Listening on *:3000');
+http.listen(36000, function() {
+    console.log('Listening on *:36000');
 
     fs.readFile('users.json', 'utf8', function(error, data) {
     	if (error) { return console.log(error); }
@@ -35,12 +39,6 @@ http.listen(3000, function() {
     	}
     });
 });
-
-
-function saveUsers() {
-	var users_json = JSON.stringify(users, null, 2);
-	fs.writeFile('users.json', users_json, 'utf8');
-};
 
 
 io.on('connection', function(socket) {
@@ -76,7 +74,7 @@ io.on('connection', function(socket) {
 	    var message = "User " + username + ":" + socket.id + " was connected.";
 	    console.log(message);
 
-	    var userInfo = {};
+	    // var userInfo = {};
 	    var foundUser = false;
 
 	    for (i in users) {
@@ -91,17 +89,7 @@ io.on('connection', function(socket) {
 
 	    /// Not found user, create new user.
 	    if (!foundUser) {
-	        userInfo.name = username;
-	        userInfo.id = socket.id;
-          userInfo.creation = (new Date).toString();
-
-	        userInfo.isConnected = true;
-	        userInfo.balance = 0;
-	        userInfo.isInSimulation = false;
-	        userInfo.isInParty = false;
-	        userInfo.partyMembers = [];
-
-	        users.push(userInfo);
+        users.push( newUser(username, socket) );
 	    }
 
 	    io.emit('userUpdate', users);
@@ -128,10 +116,21 @@ io.on('connection', function(socket) {
       console.log('Attempting to embark on quest');
 
       var user = userForID(socket.id);
-      console.log(user);
-      if (user && !user.isInSimulation) {
-        var simulation = new Simulation(io, user);
-      }
+      if (!user || user.isInSimulation) 
+        { console.log('User ' + socket.id + ' doesn\'t exist or is already in a quest'); return; }
+
+      var simulation = new Simulation(io, user, function(event) {
+
+        switch (event) {
+          case "userUpdate":
+            io.emit('userUpdate', users);
+            break;
+
+          default:
+            console.log('\'' + event + '\' simulation flag has not been implemented by server.');
+        }
+        
+      });
 
     });
 
@@ -152,10 +151,32 @@ io.on('connection', function(socket) {
 
     /// Join the party of a user.
     socket.on('joinParty', function(leaderName) {
+      for (var i in users) {
+        var leader = users[i];
+        if (leader.name != leaderName) { continue; }
+        
+        console.log(users[i].partyMembers);
 
+        if (leader.partyMembers.length < 2 && !leader.isInParty) {
+          var newMember = userForID(socket.id);
+          leader.partyMembers.push(newMember);
+          newMember.isInParty = true;
+        } else {
+          io.to(socket.id).emit('logToConsole', leaderName + '\'s party is full');
+        }
+        
+      }
     });
 
 });
+
+
+/// == Utilities ==
+
+function saveUsers() {
+  var users_json = JSON.stringify(users, null, 2);
+  fs.writeFile('users.json', users_json, 'utf8');
+};
 
 
 function userForID(id) {
@@ -167,3 +188,34 @@ function userForID(id) {
 	return null;
 }
 
+
+function newUser(username, socket) {
+  return newUser = {
+    name: username,
+    id: socket.id,
+    creation: (new Date).toString(),
+
+    isConnected: true,
+    balance: 0,
+    isInSimulation: false,
+    isInParty: false,
+    partyMembers: []
+  };    
+}
+
+
+function userJoinLeader(user, leader) {
+  // Return if leader is in party
+  if (leader.isInParty) { return; }
+  // Return if party is full
+  if (leader.partyMembers.length > 1) { return; }
+
+  // Return if user is already in party
+  for (var i in leader.partyMembers) {
+    if (leader.partyMembers[i].name == user.name) {
+      return;
+    }
+  }
+
+
+}

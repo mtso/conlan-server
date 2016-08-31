@@ -8,10 +8,9 @@ const UPDATE_INTERVAL = 35;
 module.exports = Simulation;
 
 
-function Simulation(io, user) {
+function Simulation(io, user, callback) {
 	this.namespace = generateNamespace();
-	// this.io = io;
-
+  this.callback = callback;
 	this.users = [];
   this.users.push(user);
   for (var i in user.partyMembers) {
@@ -24,13 +23,12 @@ function Simulation(io, user) {
 	this.updateTimer = setInterval(this.update, UPDATE_INTERVAL);
 
   this.setup(io);
-
-};
+}
 
 
 /// Sets up the room, adding user, current quest monster
 /// Declare and define simulation namespace process
-Simulation.prototype.setup = function(io) {
+Simulation.prototype.setup = function(io, callback) {
 
   var self = this;
 
@@ -51,6 +49,7 @@ Simulation.prototype.setup = function(io) {
         if (user.name == username) {
           user.isInSimulation = true;
         }
+        self.callback('userUpdate');
       }
 
       if (allPlayersReady(self.users)) {
