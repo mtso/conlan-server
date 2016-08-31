@@ -29,8 +29,9 @@ http.listen(3000, function() {
     	if (error) { return console.log(error); }
 
     	users = JSON.parse(data);
-    	for (i in users) {
+    	for (var i in users) {
     		users[i].isConnected = false;
+        users[i].isInSimulation = false;
     	}
     });
 });
@@ -109,6 +110,11 @@ io.on('connection', function(socket) {
     });
 
 
+    /// Refresh data
+    socket.on('refresh', function() {
+      io.emit('userUpdate', users);
+    });
+
     /// Send Quest Data
     socket.on('getQuests', function() {
     	// var data = questsData;
@@ -122,10 +128,25 @@ io.on('connection', function(socket) {
       console.log('Attempting to embark on quest');
 
       var user = userForID(socket.id);
+      console.log(user);
       if (user && !user.isInSimulation) {
         var simulation = new Simulation(io, user);
       }
 
+    });
+
+
+    /// Leave simulation
+    socket.on('leaveSimulation', function(namespace) {
+      socket.leave(namespace);
+      for (var i in users) {
+        if (users[i].id == socket.id) {
+          users[i].isInSimulation = false;
+          break;
+        }
+      }
+      io.emit('userUpdate', users);
+      console.log(socket.id + ' left ' + namespace);
     });
 
 
@@ -135,22 +156,6 @@ io.on('connection', function(socket) {
     });
 
 });
-
-
-
-// var simulationManager = io.of('/sim');
-// simulationManager.on('connection', function(socket) {
-// 	console.log('Simulation Manager')
-
-
-// });
-
-
-// var roomCounter = 0;
-
-// function newRoomID() {
-// 	return "sim:" + roomCounter++;
-// };
 
 
 function userForID(id) {

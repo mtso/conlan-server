@@ -23,8 +23,6 @@ function Simulation(io, user) {
 	/// Update variables
 	this.updateTimer = setInterval(this.update, UPDATE_INTERVAL);
 
-
-  
   this.setup(io);
 
 };
@@ -34,33 +32,30 @@ function Simulation(io, user) {
 /// Declare and define simulation namespace process
 Simulation.prototype.setup = function(io) {
 
-  var namespace = this.namespace;
+  var self = this;
 
   this.sim = io.of(this.namespace);
 
-  var simulation = this;
-
   this.sim.on('connection', function(socket) {
-    console.log('User connected to simulation namespace ' + namespace);
+    console.log('User connected to simulation namespace ' + self.namespace);
     // console.log('/sim' + this.room);
 
     socket.on('joinSimulation', function(username) {
       console.log('User ' + username + ' joins sim');
 
-      console.log(this.users);
-      
-      for (var i in this.users) {
+      console.log(self.users);
 
-        var user = this.users[i];
+      for (var i in self.users) {
+        var user = self.users[i];
         console.log(user);
         if (user.name == username) {
           user.isInSimulation = true;
         }
       }
 
-      if (allPlayersReady(this.users)) {
+      if (allPlayersReady(self.users)) {
         console.log('ready');
-        simulation.beginCountdown();
+        self.beginCountdown();
       } else {
         console.log('not ready');
       }
