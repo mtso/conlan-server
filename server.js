@@ -5,9 +5,9 @@
  *  Server process
  */
 
-const Entity = require('./gameplay/entity.js');
-var entity = new Entity();
-entity.addComponent('3');
+// const Entity = require('./gameplay/entity.js');
+// var entity = new Entity();
+// entity.addComponent('3');
 
 /// Require
 const app  = require('express')();
@@ -36,6 +36,10 @@ http.listen(process.env.PORT || 3000, function() {
     	for (var i in users) {
     		users[i].isConnected = false;
         users[i].isInSimulation = false;
+
+        while (users[i].partyMembers.length > 0) {
+          users[i].partyMembers.pop();
+        }
     	}
     });
 });
@@ -102,7 +106,7 @@ io.on('connection', function(socket) {
             partyMembers: []
           };    
         }
-        
+
         users.push( newUser(username, socket) );
 	    }
 

@@ -11,12 +11,14 @@ module.exports = Simulation;
 function Simulation(io, user, callback) {
 	this.namespace = generateNamespace();
   this.callback = callback;
+
 	this.users = [];
   this.users.push(user);
   for (var i in user.partyMembers) {
     this.users.push(user.partyMembers[i]);
   }
 
+  // console.log(this.users);
 	console.log('Simulation instance created with namespace ' + this.namespace + ' and user ' + this.users[0].name);
 
 	/// Update variables
@@ -30,18 +32,25 @@ function Simulation(io, user, callback) {
 /// Declare and define simulation namespace process
 Simulation.prototype.setup = function(io, callback) {
 
+  // this.players = [];
+  // for (var user in users) {
+  //   var newPlayer = Entity(users[user].name);
+  //   this.players.push(newPlayer);
+  // }
+
+
+  /// Needed for sim binding
   var self = this;
 
   this.sim = io.of(this.namespace);
 
   this.sim.on('connection', function(socket) {
     console.log('User connected to simulation namespace ' + self.namespace);
-    // console.log('/sim' + this.room);
 
     socket.on('joinSimulation', function(username) {
       console.log('User ' + username + ' joins sim');
 
-      console.log(self.users);
+      // console.log(self.users);
 
       for (var i in self.users) {
         var user = self.users[i];
@@ -65,7 +74,7 @@ Simulation.prototype.setup = function(io, callback) {
 
   // Once set up, broadcast namespace to the users in the party.
   for (var i in this.users) {
-    const id = this.users[i].id
+    var id = this.users[i].id;
     io.to(id).emit('newSimulationCreated', this.namespace);
   }
 
