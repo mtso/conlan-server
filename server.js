@@ -89,6 +89,20 @@ io.on('connection', function(socket) {
 
 	    /// Not found user, create new user.
 	    if (!foundUser) {
+        function newUser(username, socket) {
+          return newUser = {
+            name: username,
+            id: socket.id,
+            creation: (new Date).toString(),
+
+            isConnected: true,
+            balance: 0,
+            isInSimulation: false,
+            isInParty: false,
+            partyMembers: []
+          };    
+        }
+        
         users.push( newUser(username, socket) );
 	    }
 
@@ -189,19 +203,19 @@ function userForID(id) {
 }
 
 
-function newUser(username, socket) {
-  return newUser = {
-    name: username,
-    id: socket.id,
-    creation: (new Date).toString(),
+// function newUser(username, socket) {
+//   return newUser = {
+//     name: username,
+//     id: socket.id,
+//     creation: (new Date).toString(),
 
-    isConnected: true,
-    balance: 0,
-    isInSimulation: false,
-    isInParty: false,
-    partyMembers: []
-  };    
-}
+//     isConnected: true,
+//     balance: 0,
+//     isInSimulation: false,
+//     isInParty: false,
+//     partyMembers: []
+//   };    
+// }
 
 
 function userJoinLeader(user, leader) {
@@ -216,6 +230,4 @@ function userJoinLeader(user, leader) {
       return;
     }
   }
-
-
 }
