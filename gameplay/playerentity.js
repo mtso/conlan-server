@@ -1,5 +1,6 @@
 
-var Entity = require('./entity');
+const Entity = require('./lib/entity');
+
 
 module.exports = PlayerEntity;
 
