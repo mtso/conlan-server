@@ -1,4 +1,7 @@
-
+/**
+ * 
+ */
+ 
 const Component = require('./Component');
 
 
@@ -30,8 +33,7 @@ ComponentSystem.prototype.remove = function(component) {
 
 ComponentSystem.prototype.removeComponentFrom = function(entity) {
   for (var component of entity._components) {
-    // this.remove(component);
-    console.log(this.remove(component));
+    this.remove(component);
   }
 }
 

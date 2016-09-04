@@ -9,8 +9,6 @@ PlayerEntity = function(name) {
 
   var healthComponent = new HealthComponent(100);
   var energyComponent = new EnergyComponent(50);
-  // this._components.add(healthComponent);
-  // this._components.add(energyComponent);
   this.add(healthComponent);
   this.add(energyComponent);
 }

@@ -1,4 +1,7 @@
-
+/**
+ * 
+ */
+ 
 const Component = require('./Component');
 
 /**
@@ -10,12 +13,9 @@ function Entity() {
   this._components = [];
 }
 
-/*
+/**
  * 
  */
-
-// Entity.prototype.constructor = Entity;
-
 
 Entity.prototype.add = function(componentToAdd) {
   if (this._components.length > 0) {
@@ -34,6 +34,9 @@ Entity.prototype.add = function(componentToAdd) {
   }
 };
 
+/**
+ * 
+ */
 
 Entity.prototype.componentOfType = function(componentType) {
   for (var component of this._components) {
@@ -44,6 +47,9 @@ Entity.prototype.componentOfType = function(componentType) {
   return undefined;
 };
 
+/**
+ * 
+ */
 
 Entity.prototype.update = function(deltaTime) {
   for (var component of this._components) {
