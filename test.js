@@ -2,34 +2,18 @@
 const HealthComponent = require('./gameplay/components/HealthComponent');
 const EnergyComponent = require('./gameplay/components/EnergyComponent');
 const ComponentSystem = require('./gameplay/lib/ComponentSystem');
-const Entity          = require('./gameplay/lib/Entity');
+const PlayerEntity    = require('./gameplay/entities/PlayerEntity');
 
 
-var player = new Entity();
-var healthComponent = new HealthComponent(100);
-var healthComponentCopy = new HealthComponent(100);
-var energyComponent = new EnergyComponent(50);
-var healthSystem = new ComponentSystem(HealthComponent);
+var player = new PlayerEntity('player1');
 
+var componentSystems = [new ComponentSystem(HealthComponent), 
+                        new ComponentSystem(EnergyComponent)];
 
-player.add(healthComponent);
-player.add(healthComponent);
-player.add(healthComponentCopy);
-player.add(energyComponent);
+for (var componentSystem of componentSystems) {
+  componentSystem.addComponentFrom(player);
+}
 
-
-healthSystem.addComponentFrom(player);
-healthSystem.add(healthComponent);
-healthSystem.add(healthComponentCopy);
-healthSystem.add(energyComponent);
-
-
-// healthSystem.remove(healthComponent);
-// healthSystem.removeComponentFrom(player);
-
-
-console.log(player);
-console.log(healthSystem);
-
-
-healthSystem.update(20);
+for (var componentSystem of componentSystems) {
+  componentSystem.update(20);
+}

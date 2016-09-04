@@ -27,21 +27,21 @@ app.get('/', function(req, res) {
 
 // process.env.PORT for dynamic Heroku port
 http.listen(process.env.PORT || 3000, function() {
-    console.log('Listening on *:3000');
+  console.log('Listening on *:3000');
 
-    fs.readFile('users.json', 'utf8', function(error, data) {
-    	if (error) { return console.log(error); }
+  fs.readFile('users.json', 'utf8', function(error, data) {
+  	if (error) { return console.log(error); }
 
-    	users = JSON.parse(data);
-    	for (var i in users) {
-    		users[i].isConnected = false;
-        users[i].isInSimulation = false;
+  	users = JSON.parse(data);
+  	for (var i in users) {
+  		users[i].isConnected = false;
+      users[i].isInSimulation = false;
 
-        while (users[i].partyMembers.length > 0) {
-          users[i].partyMembers.pop();
-        }
-    	}
-    });
+      while (users[i].partyMembers.length > 0) {
+        users[i].partyMembers.pop();
+      }
+  	}
+  });
 });
 
 
