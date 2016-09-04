@@ -22,14 +22,14 @@ var users = [];
 
 
 app.get('/', function(req, res) {
-    res.sendFile(__dirname + '/index.html');
+    res.sendFile(__dirname + '/client.html');
 });
 
 // process.env.PORT for dynamic Heroku port
 http.listen(process.env.PORT || 3000, function() {
   console.log('Listening on *:3000');
 
-  fs.readFile('users.json', 'utf8', function(error, data) {
+  fs.readFile('data/users.json', 'utf8', function(error, data) {
   	if (error) { return console.log(error); }
 
   	users = JSON.parse(data);
@@ -193,7 +193,7 @@ io.on('connection', function(socket) {
 
 function saveUsers() {
   var users_json = JSON.stringify(users, null, 2);
-  fs.writeFile('users.json', users_json, 'utf8');
+  fs.writeFile('data/users.json', users_json, 'utf8');
 };
 
 
