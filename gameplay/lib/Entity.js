@@ -1,5 +1,5 @@
 
-var Component = require('./Component');
+const Component = require('./Component');
 
 /**
  * Base Entity object. Contains an array of components. 
@@ -30,8 +30,6 @@ Entity.prototype.add = function(componentToAdd) {
   if (Component.prototype.isPrototypeOf(componentToAdd)) {
     this._components.push(componentToAdd);
   } else {
-    console.log(Component.prototype);
-    console.log(Object.getPrototypeOf(componentToAdd));
     console.log('Add failed, componentToAdd is not a Component');
   }
 };
